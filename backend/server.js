@@ -17,10 +17,8 @@ const app = express();
 // Trust proxy for Vercel deployment
 app.set('trust proxy', 1);
 
-// Connect to MongoDB (only in non-serverless environments)
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-  connectDB();
-}
+// Connect to MongoDB
+connectDB();
 
 // Security middleware
 app.use(helmet());
@@ -39,32 +37,35 @@ app.use(limiter);
 
 // CORS configuration
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'https://notes-immx.vercel.app',
-      'https://notes-immx.vercel.app/',
-      'https://notes-wheat.vercel.app',
-      'https://notes-wheat.vercel.app/',
-      'https://notes-c4llbb4gc-samyak2005s-projects.vercel.app',
-      'https://notes-c4llbb4gc-samyak2005s-projects.vercel.app/',
-      process.env.FRONTEND_URL
-    ].filter(Boolean);
-    
-    console.log('Allowed origins:', allowedOrigins);
-    console.log('Request origin:', origin);
-    
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://notes-immx.vercel.app',
+    'https://notes-wheat.vercel.app',
+    'https://notes-c4llbb4gc-samyak2005s-projects.vercel.app',
+    process.env.FRONTEND_URL
+  ].filter(Boolean),
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200
 }));
+
+// Handle preflight requests
+app.options('*', (req, res) => {
+  console.log('OPTIONS request received:', req.method, req.url, req.headers.origin);
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.sendStatus(200);
+});
+
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url} - Origin: ${req.headers.origin}`);
+  next();
+});
 
 // Body parser middleware
 app.use(express.json({ limit: '10mb' }));
