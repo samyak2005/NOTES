@@ -13,6 +13,9 @@ const tenantRoutes = require('./routes/tenants');
 
 const app = express();
 
+// Trust proxy for Vercel deployment
+app.set('trust proxy', 1);
+
 // Connect to MongoDB
 connectDB();
 
@@ -22,7 +25,12 @@ app.use(helmet());
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: {
+    error: 'Too many requests from this IP, please try again later.'
+  }
 });
 app.use(limiter);
 
@@ -36,6 +44,10 @@ app.use(cors({
       'http://localhost:3000',
       'https://notes-immx.vercel.app',
       'https://notes-immx.vercel.app/',
+      'https://notes-wheat.vercel.app',
+      'https://notes-wheat.vercel.app/',
+      'https://notes-c4llbb4gc-samyak2005s-projects.vercel.app',
+      'https://notes-c4llbb4gc-samyak2005s-projects.vercel.app/',
       process.env.FRONTEND_URL
     ].filter(Boolean);
     
