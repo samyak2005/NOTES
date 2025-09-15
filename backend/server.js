@@ -51,6 +51,9 @@ app.use(cors({
       process.env.FRONTEND_URL
     ].filter(Boolean);
     
+    console.log('Allowed origins:', allowedOrigins);
+    console.log('Request origin:', origin);
+    
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -81,6 +84,17 @@ app.get('/', (req, res) => {
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+// Debug endpoint to check environment variables
+app.get('/debug', (req, res) => {
+  res.json({
+    hasMongoUri: !!process.env.MONGODB_URI,
+    hasJwtSecret: !!process.env.JWT_SECRET,
+    hasFrontendUrl: !!process.env.FRONTEND_URL,
+    nodeEnv: process.env.NODE_ENV,
+    mongoUriLength: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0
+  });
 });
 
 // API routes
