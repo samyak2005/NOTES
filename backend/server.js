@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
 const connectDB = require('./config/database');
@@ -16,8 +17,10 @@ const app = express();
 // Trust proxy for Vercel deployment
 app.set('trust proxy', 1);
 
-// Connect to MongoDB
-connectDB();
+// Connect to MongoDB (only in non-serverless environments)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  connectDB();
+}
 
 // Security middleware
 app.use(helmet());
@@ -66,6 +69,19 @@ app.use(cors({
 // Body parser middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Database connection middleware for serverless
+app.use(async (req, res, next) => {
+  if (process.env.VERCEL && mongoose.connection.readyState !== 1) {
+    try {
+      await connectDB();
+    } catch (error) {
+      console.error('Database connection failed:', error);
+      return res.status(500).json({ message: 'Database connection failed' });
+    }
+  }
+  next();
+});
 
 // Root endpoint
 app.get('/', (req, res) => {

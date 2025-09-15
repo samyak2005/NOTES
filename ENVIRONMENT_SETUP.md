@@ -6,7 +6,7 @@ Your application requires the following environment variables to be set:
 
 ### 1. Database Configuration
 ```
-MONGODB_URI=mongodb+srv://youtubeuser:12345@cluster0.8b4rz.mongodb.net/notesapp?retryWrites=true&w=majority&appName=Cluster0
+MONGODB_URI=mongodb+srv://youtubeuser:12345@cluster0.8b4rz.mongodb.net/notesapp?retryWrites=true&w=majority&appName=Cluster0&serverSelectionTimeoutMS=5000&connectTimeoutMS=10000&socketTimeoutMS=45000&maxPoolSize=10&minPoolSize=5&maxIdleTimeMS=30000
 ```
 
 ### 2. Frontend URL
