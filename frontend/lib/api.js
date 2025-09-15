@@ -39,23 +39,23 @@ api.interceptors.response.use(
 
 // Auth API
 export const authAPI = {
-  login: (email, password) => api.post('/auth/login', { email, password }),
-  getMe: () => api.get('/auth/me'),
+  login: (email, password) => api.post('/api/auth/login', { email, password }),
+  getMe: () => api.get('/api/auth/me'),
 };
 
 // Notes API
 export const notesAPI = {
-  getNotes: () => api.get('/notes'),
-  getNote: (id) => api.get(`/notes/${id}`),
-  createNote: (title, content) => api.post('/notes', { title, content }),
-  updateNote: (id, title, content) => api.put(`/notes/${id}`, { title, content }),
-  deleteNote: (id) => api.delete(`/notes/${id}`),
+  getNotes: () => api.get('/api/notes'),
+  getNote: (id) => api.get(`/api/notes/${id}`),
+  createNote: (title, content) => api.post('/api/notes', { title, content }),
+  updateNote: (id, title, content) => api.put(`/api/notes/${id}`, { title, content }),
+  deleteNote: (id) => api.delete(`/api/notes/${id}`),
 };
 
 // Tenant API
 export const tenantAPI = {
-  getTenant: (slug) => api.get(`/tenants/${slug}`),
-  upgradeTenant: (slug) => api.post(`/tenants/${slug}/upgrade`),
+  getTenant: (slug) => api.get(`/api/tenants/${slug}`),
+  upgradeTenant: (slug) => api.post(`/api/tenants/${slug}/upgrade`),
 };
 
 // Health check
